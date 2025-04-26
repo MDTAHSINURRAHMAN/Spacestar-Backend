@@ -7,6 +7,9 @@ export const Product = {
     const db = getDB();
     const result = await db.collection(collection).insertOne({
       ...productData,
+      images: productData.images || [],
+      sizes: productData.sizes || [],
+      colors: productData.colors || [],
       createdAt: new Date(),
       updatedAt: new Date(),
     });
