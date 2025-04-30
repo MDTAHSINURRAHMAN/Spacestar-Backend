@@ -7,7 +7,12 @@ export const Order = {
     const db = getDB();
     const result = await db.collection(collection).insertOne({
       ...orderData,
-      status: "pending",
+      status: "unpaid",
+      subtotal: orderData.items.reduce(
+        (sum, item) => sum + item.cumulativeSum,
+        0
+      ),
+      transactionId: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -24,16 +29,19 @@ export const Order = {
     return await db.collection(collection).find().toArray();
   },
 
-  async updateStatus(id, status) {
+  async updateStatus(id, status, transactionId = null) {
     const db = getDB();
-    return await db.collection(collection).updateOne(
-      { _id: id },
-      {
-        $set: {
-          status,
-          updatedAt: new Date(),
-        },
-      }
-    );
+    const updateData = {
+      status,
+      updatedAt: new Date(),
+    };
+
+    if (transactionId) {
+      updateData.transactionId = transactionId;
+    }
+
+    return await db
+      .collection(collection)
+      .updateOne({ _id: id }, { $set: updateData });
   },
 };

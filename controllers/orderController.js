@@ -4,12 +4,16 @@ import { ObjectId } from "mongodb";
 export const createOrder = async (req, res) => {
   try {
     const order = await Order.create(req.body);
-    res.status(201).json(order);
+    res.status(201).json({
+      message: "Order created successfully",
+      orderId: order.insertedId,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error creating order", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error creating order", error: error.message });
   }
 };
-
 
 export const getAllOrders = async (req, res) => {
   try {
