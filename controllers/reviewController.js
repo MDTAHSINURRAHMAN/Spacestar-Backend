@@ -9,7 +9,8 @@ export const createReview = async (req, res) => {
       .status(500)
       .json({ message: "Error creating review", error: error.message });
   }
-};0
+};
+0;
 
 export const getAllReviews = async (req, res) => {
   try {
@@ -34,5 +35,21 @@ export const deleteReview = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error deleting review", error: error.message });
+  }
+};
+
+export const updateReview = async (req, res) => {
+  try {
+    const reviewId = new ObjectId(req.params.id);
+    const updateData = req.body;
+    const result = await Review.update(reviewId, updateData);
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+    res.status(200).json({ message: "Review updated successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating review", error: error.message });
   }
 };

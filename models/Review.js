@@ -22,4 +22,22 @@ export const Review = {
     const db = getDB();
     return await db.collection(collection).deleteOne({ _id: id });
   },
+
+  async update(id, updateData) {
+    const db = getDB();
+    const { reviewerName, rating, date, subheading, review } = updateData;
+    return await db.collection(collection).updateOne(
+      { _id: id },
+      {
+        $set: {
+          reviewerName,
+          rating,
+          date,
+          subheading,
+          review,
+          updatedAt: new Date(),
+        },
+      }
+    );
+  },
 };

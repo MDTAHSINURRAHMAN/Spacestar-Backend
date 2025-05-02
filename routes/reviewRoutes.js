@@ -3,6 +3,7 @@ import {
   createReview,
   getAllReviews,
   deleteReview,
+  updateReview,
 } from "../controllers/reviewController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
@@ -12,5 +13,6 @@ router.post("/", protect, createReview);
 
 router.get("/", getAllReviews);
 router.delete("/:id", protect, deleteReview);
+router.put("/:id", protect, updateReview);
 
 export default router;
