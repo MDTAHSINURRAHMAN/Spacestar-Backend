@@ -4,13 +4,14 @@ import {
   getAllReviews,
   deleteReview,
   updateReview,
+  getReviewById,
 } from "../controllers/reviewController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
 router.post("/", protect, createReview);
-
+router.get("/:id", getReviewById);
 router.get("/", getAllReviews);
 router.delete("/:id", protect, deleteReview);
 router.put("/:id", protect, updateReview);

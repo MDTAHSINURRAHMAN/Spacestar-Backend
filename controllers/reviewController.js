@@ -10,7 +10,22 @@ export const createReview = async (req, res) => {
       .json({ message: "Error creating review", error: error.message });
   }
 };
-0;
+
+export const getReviewById = async (req, res) => {
+  try {
+    const reviewId = new ObjectId(req.params.id);
+    const db = getDB();
+    const review = await db.collection("reviews").findOne({ _id: reviewId });
+
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    res.status(200).json(review);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching review", error: error.message });
+  }
+};
 
 export const getAllReviews = async (req, res) => {
   try {
