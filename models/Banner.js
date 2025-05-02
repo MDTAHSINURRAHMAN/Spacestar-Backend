@@ -11,6 +11,7 @@ export const Banner = {
       // Create default banner if none exists
       const defaultBanner = {
         imageKey: "",
+        text: "Pre-orders enjoy 10% off Full price item",
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -26,23 +27,34 @@ export const Banner = {
     return banner;
   },
 
-  async update(imageFile) {
+  async update(imageFile, text) {
     const db = getDB();
-    const fileName = `banner/${Date.now()}-${imageFile.originalname}`;
-
-    // Upload to S3
-    const imageKey = await uploadToS3(imageFile, fileName);
-
+    let imageKey;
+    if (imageFile) {
+      const fileName = `banner/${Date.now()}-${imageFile.originalname}`;
+      // Upload to S3
+      imageKey = await uploadToS3(imageFile, fileName);
+    }
     // Update database
+    const updateFields = {
+      updatedAt: new Date(),
+    };
+    if (imageKey) updateFields.imageKey = imageKey;
+    if (typeof text === "string") updateFields.text = text;
     return await db.collection(collection).updateOne(
       {},
       {
-        $set: {
-          imageKey,
-          updatedAt: new Date(),
-        },
+        $set: updateFields,
       },
       { upsert: true }
     );
   },
 };
+
+export const BannerText = {
+  async update(text) {
+    const db = getDB();
+    return await db.collection(collection).updateOne({}, { $set: { text } });
+  },
+};
+
