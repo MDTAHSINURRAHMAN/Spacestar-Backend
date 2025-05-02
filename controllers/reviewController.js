@@ -13,7 +13,13 @@ export const createReview = async (req, res) => {
 
 export const getReviewById = async (req, res) => {
   try {
-    const reviewId = new ObjectId(req.params.id);
+    const id = req.params.id;
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid review ID" });
+    }
+
+    const reviewId = new ObjectId(id);
     const db = getDB();
     const review = await db.collection("reviews").findOne({ _id: reviewId });
 
@@ -23,7 +29,9 @@ export const getReviewById = async (req, res) => {
 
     res.status(200).json(review);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching review", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching review", error: error.message });
   }
 };
 
