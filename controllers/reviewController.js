@@ -1,5 +1,6 @@
 import { Review } from "../models/Review.js";
 import { ObjectId } from "mongodb";
+import { getDB } from "../config/db.js";
 export const createReview = async (req, res) => {
   try {
     const result = await Review.create(req.body);
