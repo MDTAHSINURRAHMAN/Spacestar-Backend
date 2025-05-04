@@ -59,7 +59,7 @@ export const Order = {
 
     if (updateData.items) {
       allowedUpdates.subtotal = updateData.items.reduce(
-        (sum, item) => sum + item.cumulativeSum,
+        (sum, item) => sum + item.price * item.quantity,
         0
       );
     }
