@@ -80,7 +80,10 @@ export const deleteOrder = async (req, res) => {
 export const updateOrder = async (req, res) => {
   try {
     const orderId = new ObjectId(req.params.id);
-    const updateData = req.body;
+    const updateData = { ...req.body };
+
+    // Prevent update of immutable _id field
+    delete updateData._id;
 
     const result = await Order.update(orderId, updateData);
 
@@ -90,8 +93,7 @@ export const updateOrder = async (req, res) => {
 
     res.status(200).json({ message: "Order updated successfully" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error updating order", error: error.message });
+    res.status(500).json({ message: "Error updating order", error: error.message });
   }
 };
+
