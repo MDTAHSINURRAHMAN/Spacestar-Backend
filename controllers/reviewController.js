@@ -32,7 +32,7 @@ export const createReview = async (req, res) => {
     if (req.file) {
       // Generate a unique key for the image
       const timestamp = Date.now();
-      imageKey = `reviews/${productId}/${timestamp}-${req.file.originalname}`;
+      imageKey = `reviews/${timestamp}-${req.file.originalname}`;
       await uploadToS3(req.file, imageKey);
     }
 
