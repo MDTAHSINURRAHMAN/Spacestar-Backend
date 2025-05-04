@@ -44,4 +44,28 @@ export const Order = {
       .collection(collection)
       .updateOne({ _id: id }, { $set: updateData });
   },
+
+  async delete(id) {
+    const db = getDB();
+    return await db.collection(collection).deleteOne({ _id: id });
+  },
+
+  async update(id, updateData) {
+    const db = getDB();
+    const allowedUpdates = {
+      ...updateData,
+      updatedAt: new Date(),
+    };
+
+    if (updateData.items) {
+      allowedUpdates.subtotal = updateData.items.reduce(
+        (sum, item) => sum + item.cumulativeSum,
+        0
+      );
+    }
+
+    return await db
+      .collection(collection)
+      .updateOne({ _id: id }, { $set: allowedUpdates });
+  },
 };

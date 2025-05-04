@@ -59,3 +59,39 @@ export const updateOrderStatus = async (req, res) => {
       .json({ message: "Error updating order status", error: error.message });
   }
 };
+
+export const deleteOrder = async (req, res) => {
+  try {
+    const orderId = new ObjectId(req.params.id);
+    const result = await Order.delete(orderId);
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.status(200).json({ message: "Order deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error deleting order", error: error.message });
+  }
+};
+
+export const updateOrder = async (req, res) => {
+  try {
+    const orderId = new ObjectId(req.params.id);
+    const updateData = req.body;
+
+    const result = await Order.update(orderId, updateData);
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.status(200).json({ message: "Order updated successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating order", error: error.message });
+  }
+};
