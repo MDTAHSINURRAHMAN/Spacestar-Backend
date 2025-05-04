@@ -1,5 +1,6 @@
 import express from "express";
 import { getAbout, createAbout, updateAbout, deleteAbout } from "../controllers/aboutController.js";
+import { protect } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -7,12 +8,12 @@ const router = express.Router();
 router.get("/", getAbout);
 
 // POST: Create a new about page content
-router.post("/", createAbout);
+router.post("/", protect, createAbout);
 
 // DELETE: Delete about page content
-router.delete("/", deleteAbout);
+router.delete("/", protect, deleteAbout);
 
 // PUT: Update about page content (single document)
-router.put("/", updateAbout);
+router.put("/", protect, updateAbout);
 
 export default router;
