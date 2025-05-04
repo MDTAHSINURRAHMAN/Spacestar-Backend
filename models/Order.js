@@ -9,7 +9,7 @@ export const Order = {
       ...orderData,
       status: "unpaid",
       subtotal: orderData.items.reduce(
-        (sum, item) => sum + item.cumulativeSum,
+        (sum, item) => sum + item.quantity * item.price,
         0
       ),
       transactionId: null,
