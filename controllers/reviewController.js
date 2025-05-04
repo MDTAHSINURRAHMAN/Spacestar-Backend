@@ -85,7 +85,10 @@ export const getReviewById = async (req, res) => {
     if (review.productId && ObjectId.isValid(review.productId)) {
       const product = await db
         .collection("products")
-        .findOne({ _id: new ObjectId(review.productId) }, { projection: { name: 1 } });
+        .findOne(
+          { _id: new ObjectId(review.productId) },
+          { projection: { name: 1 } }
+        );
 
       if (product?.name) {
         review.product = product.name;
@@ -100,16 +103,27 @@ export const getReviewById = async (req, res) => {
   }
 };
 
-
 export const getAllReviews = async (req, res) => {
   try {
     const reviews = await Review.findAll();
 
     // Get signed URLs for all images
+    const db = getDB();
     const reviewsWithUrls = await Promise.all(
       reviews.map(async (review) => {
         if (review.image) {
           review.imageUrl = await getSignedImageUrl(review.image);
+        }
+        if (review.productId && ObjectId.isValid(review.productId)) {
+          const product = await db
+            .collection("products")
+            .findOne(
+              { _id: new ObjectId(review.productId) },
+              { projection: { name: 1 } }
+            );
+          if (product?.name) {
+            review.product = product.name;
+          }
         }
         return review;
       })
