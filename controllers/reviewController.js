@@ -106,17 +106,19 @@ export const getReviewById = async (req, res) => {
 export const getAllReviews = async (req, res) => {
   try {
     const reviews = await Review.findAll();
-
-    // Get signed URLs for all images
     const db = getDB();
+
     const reviewsWithUrls = await Promise.all(
       reviews.map(async (review) => {
-        const reviewObj = { ...review }; // ✅ Clone plain object
+        const reviewObj = { ...review }; // 👈 Make a safe, mutable copy
 
+        // Add signed image URL
         if (review.image) {
+          console.log("✅ Signed URL:", reviewObj.imageUrl); // 🧪 Debug
           reviewObj.imageUrl = await getSignedImageUrl(review.image);
         }
 
+        // Add product name
         if (review.productId && ObjectId.isValid(review.productId)) {
           const product = await db
             .collection("products")
@@ -129,7 +131,7 @@ export const getAllReviews = async (req, res) => {
           }
         }
 
-        return reviewObj;
+        return reviewObj; // 👈 Return the updated copy
       })
     );
 
@@ -140,6 +142,7 @@ export const getAllReviews = async (req, res) => {
       .json({ message: "Error fetching reviews", error: error.message });
   }
 };
+
 
 export const getReviewsByProductId = async (req, res) => {
   try {
