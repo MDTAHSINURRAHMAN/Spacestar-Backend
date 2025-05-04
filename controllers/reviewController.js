@@ -81,6 +81,17 @@ export const getReviewById = async (req, res) => {
       review.imageUrl = await getSignedImageUrl(review.image);
     }
 
+    // Add product name from productId
+    if (review.productId && ObjectId.isValid(review.productId)) {
+      const product = await db
+        .collection("products")
+        .findOne({ _id: new ObjectId(review.productId) }, { projection: { name: 1 } });
+
+      if (product?.name) {
+        review.product = product.name;
+      }
+    }
+
     res.status(200).json(review);
   } catch (error) {
     res
@@ -88,6 +99,7 @@ export const getReviewById = async (req, res) => {
       .json({ message: "Error fetching review", error: error.message });
   }
 };
+
 
 export const getAllReviews = async (req, res) => {
   try {
