@@ -22,8 +22,13 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
-    credentials: true,
+    origin: [
+      "http://localhost:3000", // local development
+      "https://your-frontend-domain.vercel.app", // production frontend (safe to allow)
+    ],
+    credentials: true, // allow cookies/auth headers (needed for login sessions)
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // explicitly allow required methods
+    allowedHeaders: ["Content-Type", "Authorization"], // restrict to only what's necessary
   })
 );
 
@@ -34,7 +39,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/banner", bannerRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/branding", brandingRoutes);
+app.use("/api/home", homeRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
