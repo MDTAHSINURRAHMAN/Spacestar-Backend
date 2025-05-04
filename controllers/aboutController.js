@@ -6,10 +6,7 @@ export const getAbout = async (req, res) => {
   try {
     const db = getDB();
     const about = await db.collection("about").findOne({});
-
-    if (!about) {
-      return res.status(404).json({ message: "About content not found" });
-    }
+    res.status(200).json(about || null); // ✅ instead of 404
 
     res.json(about);
   } catch (error) {
@@ -85,4 +82,3 @@ export const deleteAbout = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
