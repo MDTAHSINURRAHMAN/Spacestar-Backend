@@ -13,6 +13,7 @@ import bannerRoutes from "./routes/bannerRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import homeRoutes from "./routes/homeRoutes.js";
 import aboutRoutes from "./routes/aboutRoutes.js";
+import storyRoutes from "./routes/storyRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -23,7 +24,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use((req, res, next) => {
-  console.log("Incoming origin:", req.headers.origin); // 👀 Debug log
   next();
 });
 
@@ -62,6 +62,7 @@ app.use("/api/banner", bannerRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/home", homeRoutes);
 app.use("/api/about", aboutRoutes);
+app.use("/api/story", storyRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
