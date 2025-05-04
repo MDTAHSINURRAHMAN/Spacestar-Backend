@@ -110,12 +110,11 @@ export const getAllReviews = async (req, res) => {
 
     const reviewsWithUrls = await Promise.all(
       reviews.map(async (review) => {
-        const reviewObj = { ...review }; // 👈 Make a safe, mutable copy
 
         // Add signed image URL
         if (review.image) {
-          console.log("✅ Signed URL:", reviewObj.imageUrl); // 🧪 Debug
-          reviewObj.imageUrl = await getSignedImageUrl(review.image);
+          const imageUrl = await getSignedImageUrl(review.image);
+          review.imageUrl = imageUrl;
         }
 
         // Add product name
@@ -127,11 +126,11 @@ export const getAllReviews = async (req, res) => {
               { projection: { name: 1 } }
             );
           if (product?.name) {
-            reviewObj.product = product.name;
+            review.product = product.name;
           }
         }
 
-        return reviewObj; // 👈 Return the updated copy
+        return review; // 👈 Return the updated copy
       })
     );
 
