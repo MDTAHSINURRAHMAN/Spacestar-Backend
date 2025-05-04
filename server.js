@@ -12,6 +12,7 @@ import settingsRoutes from "./routes/settingsRoutes.js";
 import bannerRoutes from "./routes/bannerRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import homeRoutes from "./routes/homeRoutes.js";
+import aboutRoutes from "./routes/aboutRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -60,6 +61,7 @@ app.use("/api/settings", settingsRoutes);
 app.use("/api/banner", bannerRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/home", homeRoutes);
+app.use("/api/about", aboutRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
