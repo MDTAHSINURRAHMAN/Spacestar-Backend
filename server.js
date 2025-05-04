@@ -22,13 +22,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000", // local development
-      "https://your-frontend-domain.vercel.app", // production frontend (safe to allow)
-    ],
-    credentials: true, // allow cookies/auth headers (needed for login sessions)
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // explicitly allow required methods
-    allowedHeaders: ["Content-Type", "Authorization"], // restrict to only what's necessary
+    origin: "http://localhost:3000",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
