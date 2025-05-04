@@ -11,6 +11,7 @@ import reviewRoutes from "./routes/reviewRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import bannerRoutes from "./routes/bannerRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import brandingRoutes from "./routes/brandingRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -33,6 +34,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/banner", bannerRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/branding", brandingRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
