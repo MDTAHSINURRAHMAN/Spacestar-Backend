@@ -1,4 +1,6 @@
 import { Text } from "../models/Home.js";
+import { getDB } from "../config/db.js";
+import { ObjectId } from "mongodb";
 
 // Create a new text entry
 export const createText = async (req, res) => {
@@ -22,25 +24,11 @@ export const getAllTexts = async (req, res) => {
   }
 };
 
-// Get a single text entry
-export const getText = async (req, res) => {
-  try {
-    const text = await Text.findById(req.params.id);
-    if (text) {
-      res.json(text);
-    } else {
-      res.status(404).json({ message: "Text not found" });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 // Update a text entry
 export const updateText = async (req, res) => {
   try {
     const db = getDB();
-    const result = await db.collection("texts").updateOne(
+    const result = await db.collection("home").updateOne(
       { _id: new ObjectId(req.params.id) },
       { $set: { text: req.body.text, updatedAt: new Date() } }
     );

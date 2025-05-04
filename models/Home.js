@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 export const Text = {
   async create(data) {
     const db = getDB();
-    const result = await db.collection("texts").insertOne({
+    const result = await db.collection("home").insertOne({
       text: data.text,
       createdAt: new Date(),
     });
@@ -13,16 +13,16 @@ export const Text = {
 
   async findAll() {
     const db = getDB();
-    return await db.collection("texts").find().sort({ createdAt: -1 }).toArray();
+    return await db.collection("home").find().sort({ createdAt: -1 }).toArray();
   },
 
   async findById(id) {
     const db = getDB();
-    return await db.collection("texts").findOne({ _id: new ObjectId(id) });
+    return await db.collection("home").findOne({ _id: new ObjectId(id) });
   },
 
   async delete(id) {
     const db = getDB();
-    return await db.collection("texts").deleteOne({ _id: new ObjectId(id) });
+    return await db.collection("home").deleteOne({ _id: new ObjectId(id) });
   },
 };
