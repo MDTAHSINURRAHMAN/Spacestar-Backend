@@ -1,21 +1,21 @@
 import express from "express";
-import homeController from "../controllers/homeController.js";
+import { createText, getAllTexts, getText, updateText, deleteText } from "../controllers/homeController.js";
 
 const router = express.Router();
 
 // POST: Create a new text entry
-router.post("/texts", homeController.createText);
+router.post("/texts", createText);
 
 // GET: Get all text entries
-router.get("/texts", homeController.getAllTexts);
+router.get("/texts", getAllTexts);
 
 // GET: Get a single text entry by ID
-router.get("/texts/:id", homeController.getText);
+router.get("/texts/:id", getText);
 
 // PUT: Update a text entry by ID
-router.put("/texts/:id", homeController.updateText);
+router.put("/texts/:id", updateText);
 
 // DELETE: Delete a text entry by ID
-router.delete("/texts/:id", homeController.deleteText);
+router.delete("/texts/:id", deleteText);
 
 export default router;
