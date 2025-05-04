@@ -11,7 +11,7 @@ import reviewRoutes from "./routes/reviewRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import bannerRoutes from "./routes/bannerRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
-import brandingRoutes from "./routes/brandingRoutes.js";
+import homeRoutes from "./routes/homeRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -20,19 +20,15 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+
+const allowedOrigins = [
+  "http://localhost:3000", // for local dev
+  "https://your-production-frontend-url.com", // for production
+];
 app.use(
   cors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        "http://localhost:3000", // dev
-      ];
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
+    origin: allowedOrigins,
+    credentials: true, // IMPORTANT: allows cookies
   })
 );
 
