@@ -111,9 +111,12 @@ export const getAllReviews = async (req, res) => {
     const db = getDB();
     const reviewsWithUrls = await Promise.all(
       reviews.map(async (review) => {
+        const reviewObj = { ...review }; // ✅ Clone plain object
+
         if (review.image) {
-          review.imageUrl = await getSignedImageUrl(review.image);
+          reviewObj.imageUrl = await getSignedImageUrl(review.image);
         }
+
         if (review.productId && ObjectId.isValid(review.productId)) {
           const product = await db
             .collection("products")
@@ -122,10 +125,11 @@ export const getAllReviews = async (req, res) => {
               { projection: { name: 1 } }
             );
           if (product?.name) {
-            review.product = product.name;
+            reviewObj.product = product.name;
           }
         }
-        return review;
+
+        return reviewObj;
       })
     );
 
@@ -156,7 +160,7 @@ export const getReviewsByProductId = async (req, res) => {
         return review;
       })
     );
-
+    console.log("✅ Review sample with imageUrl:", reviewsWithUrls[0]);
     res.status(200).json(reviewsWithUrls);
   } catch (error) {
     res
