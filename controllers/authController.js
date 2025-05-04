@@ -30,12 +30,11 @@ export const loginAdmin = async (req, res) => {
 
     const token = generateToken(admin._id);
 
-    // Set JWT as HTTP-only cookie
     res.cookie("jwt", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: "None", // ✅ allow sending cookie from another origin
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({
