@@ -3,14 +3,18 @@ import { ObjectId } from "mongodb";
 
 // GET /api/stories
 export const getStory = async (req, res) => {
-  try {
-    const stories = await Story.findAll();
-    res.status(200).json(stories);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch stories", error: error.message });
-  }
-};
-
+    try {
+      const stories = await Story.findAll();
+  
+      if (!stories || stories.length === 0) {
+        return res.status(200).json(null); // 👈 return null instead of []
+      }
+  
+      res.status(200).json(stories);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch stories", error: error.message });
+    }
+  };
 // POST /api/stories
 export const createStory = async (req, res) => {
   try {
