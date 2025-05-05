@@ -10,9 +10,9 @@ router.get("/", protect, getBanner);
 
 
 // PUT: Update a banner by ID
-router.put("/", protect, upload.single("image"), updateBanner);
+router.put("/:id", protect, upload.single("image"), updateBanner);
 
 // DELETE: Delete a banner by ID
-router.delete("/", protect, deleteBanner);
+router.delete("/:id", protect, deleteBanner);
 
 export default router;
