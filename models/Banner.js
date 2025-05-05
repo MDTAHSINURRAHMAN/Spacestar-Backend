@@ -9,16 +9,6 @@ export const Banner = {
     return await db.collection(collection).find().toArray();
   },
 
-  async create(data) {
-    const db = getDB();
-    const result = await db.collection(collection).insertOne({
-      ...data,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    return result;
-  },
-
   async update(imageUrl) {
     const db = getDB();
     return await db.collection("banner").updateOne(

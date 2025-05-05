@@ -1,5 +1,5 @@
 import express from "express";
-import { getBanner, createBanner, updateBanner, deleteBanner } from "../controllers/bannerController.js";
+import { getBanner, updateBanner, deleteBanner } from "../controllers/bannerController.js";
 import { upload } from "../middlewares/uploadMiddleware.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
@@ -8,9 +8,6 @@ const router = express.Router();
 // GET: Get all banners
 router.get("/", getBanner);
 
-
-// POST: Create a new banner
-router.post("/", protect, upload.single("image"), createBanner);
 
 // PUT: Update a banner by ID
 router.put("/", protect, upload.single("image"), updateBanner);
