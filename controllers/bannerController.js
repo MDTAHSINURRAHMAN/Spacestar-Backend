@@ -3,7 +3,7 @@ import { Banner } from "../models/Banner.js";
 
 export const getBanner = async (req, res) => {
   try {
-    const banner = await Banner.findOne();
+    const banner = await Banner.find();
     if (!banner) return res.status(200).json({ imageUrl: null });
 
     const imageUrl = generateSignedUrl(banner.image);
@@ -12,7 +12,7 @@ export const getBanner = async (req, res) => {
     return res.status(200).json({
       _id: banner._id,
       image: banner.image,
-      imageUrl: signedUrl,
+      imageUrl: imageUrl,
     });
   } catch (error) {
     console.error("Error in getBanner:", error);
