@@ -1,5 +1,4 @@
 import { getDB } from "../config/db.js";
-import { ObjectId } from "mongodb";
 
 const collection = "banner";
 
@@ -10,21 +9,12 @@ export const Banner = {
     return banner;
   },
 
-  async update(id, data) {
+  async upsert(data) {
     const db = getDB();
     return await db.collection(collection).updateOne(
-      { _id: new ObjectId(id) },
-      { $set: data }
+      {}, // empty filter to match any document
+      { $set: data },
+      { upsert: true } // creates a new document if none exists
     );
   },
-
-  async insert(data) {
-    const db = getDB();
-    return await db.collection(collection).insertOne(data);
-  },
-
-  async delete(id) {
-    const db = getDB();
-    return await db.collection(collection).deleteOne({ _id: new ObjectId(id) });
-  }
 };

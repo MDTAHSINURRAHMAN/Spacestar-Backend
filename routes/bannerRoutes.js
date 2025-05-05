@@ -6,6 +6,6 @@ import { protect } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 router.get("/", protect, getBanner); // Get current banner
-router.put("/:id", protect, upload.single("image"), updateBanner); // Update banner
+router.put("/", protect, upload.single("image"), updateBanner); // Update banner
 
 export default router;

@@ -1,6 +1,5 @@
 import { Banner } from "../models/Banner.js";
 import { uploadToS3, getSignedImageUrl } from "../services/s3Service.js";
-import { ObjectId } from "mongodb";
 
 export const getBanner = async (req, res) => {
   try {
@@ -13,7 +12,6 @@ export const getBanner = async (req, res) => {
     const imageUrl = await getSignedImageUrl(banner.image);
 
     return res.status(200).json({
-      _id: banner._id,
       image: banner.image,
       imageUrl,
       updatedAt: banner.updatedAt,
@@ -26,35 +24,19 @@ export const getBanner = async (req, res) => {
 
 export const updateBanner = async (req, res) => {
   try {
-    const { id } = req.params;
     const file = req.file;
 
     if (!file) {
       return res.status(400).json({ message: "No image file uploaded" });
     }
 
-    // Validate id is a valid ObjectId
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid banner ID" });
-    }
-
-    // Check if banner exists before updating
-    const existingBanner = await Banner.find();
-    if (!existingBanner || existingBanner._id.toString() !== id) {
-      return res.status(404).json({ message: "Banner not found" });
-    }
-
     const key = `banners/${Date.now()}-${file.originalname}`;
     await uploadToS3(file, key);
 
-    const result = await Banner.update(id, {
+    const result = await Banner.upsert({
       image: key,
       updatedAt: new Date(),
     });
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "Banner not updated" });
-    }
 
     const signedUrl = await getSignedImageUrl(key);
 
