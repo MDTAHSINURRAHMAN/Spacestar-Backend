@@ -42,28 +42,21 @@ export const createBanner = async (req, res) => {
 // PUT: Update banner image by ID
 export const updateBanner = async (req, res) => {
   try {
-    const { id } = req.body;
+    const image = req.file;
 
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid banner ID" });
+    if (!image) {
+      return res.status(400).json({ message: "No image uploaded" });
     }
 
-    if (!req.file) {
-      return res.status(400).json({ message: "Image file is required" });
-    }
-
-    const timestamp = Date.now();
-    const key = `banners/${timestamp}-${req.file.originalname}`;
-
-    await uploadToS3(req.file, key);
-
+    const key = `banners/${Date.now()}-${image.originalname}`;
+    await uploadToS3(image, key);
     const imageUrl = await getSignedImageUrl(key);
-    await Banner.update(imageUrl);
+
+    await Banner.update(imageUrl); // however you're updating it
 
     res.status(200).json({ imageUrl });
-
-    res.status(200).json({ message: "Banner updated successfully" });
   } catch (error) {
+    console.error("Error updating banner:", error);
     res
       .status(500)
       .json({ message: "Failed to update banner", error: error.message });
