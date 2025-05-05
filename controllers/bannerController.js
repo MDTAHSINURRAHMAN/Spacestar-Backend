@@ -4,13 +4,14 @@ import { Banner } from "../models/Banner.js";
 
 export const getBanner = async (req, res) => {
   try {
-    const banner = await Banner.findOne().sort({ createdAt: -1 });
-
+    const banner = await Banner.findOne();
     if (!banner) {
       return res.status(404).json({ message: "No banner found" });
     }
+    
+    const imageUrl = generateSignedUrl(banner.image);
+    res.json({ imageUrl });
 
-    const signedUrl = await getSignedImageUrl(banner.image); // This should match your S3 logic
     return res.status(200).json({
       _id: banner._id,
       image: banner.image,
