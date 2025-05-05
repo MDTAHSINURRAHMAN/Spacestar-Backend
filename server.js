@@ -29,7 +29,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: "https://space-star-rho.vercel.app",
     //  // ✅ your frontend URL (change in production)
 
     credentials: true,               // ✅ must be true to allow cookie sending
