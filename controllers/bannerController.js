@@ -1,54 +1,59 @@
-import { getSignedImageUrl } from "../services/s3Service.js";
 import { Banner } from "../models/Banner.js";
+import { uploadToS3, getSignedImageUrl } from "../services/s3Service.js";
+import { ObjectId } from "mongodb";
 
 export const getBanner = async (req, res) => {
   try {
-    const banners = await Banner.find();
+    const banner = await Banner.find();
 
-    if (!banners || banners.length === 0) {
+    if (!banner || !banner.image) {
       return res.status(200).json({ imageUrl: null });
     }
 
-    const banner = banners[0]; // Get the first banner
-    const imageUrl = await getSignedImageUrl(banner.image); // ✅ fixed name + async
+    const imageUrl = await getSignedImageUrl(banner.image);
 
     return res.status(200).json({
       _id: banner._id,
       image: banner.image,
       imageUrl,
+      updatedAt: banner.updatedAt,
     });
   } catch (error) {
-    console.error("❌ Error in getBanner:", error.message);
-    return res.status(500).json({ message: "Internal server error" });
+    console.error("❌ getBanner error:", error.message);
+    return res.status(500).json({ message: "Failed to fetch banner" });
   }
 };
 
 export const updateBanner = async (req, res) => {
   try {
-    if (!req.file)
-      return res.status(400).json({ message: "No image uploaded" });
+    const { id } = req.params;
+    const file = req.file;
 
-    const key = `banner/${Date.now()}-${req.file.originalname}`;
-    await uploadToS3(req.file, key);
+    if (!file) {
+      return res.status(400).json({ message: "No image file uploaded" });
+    }
 
-    const result = await Banner.update({ image: key });
-    const imageUrl = await getSignedImageUrl(key);
+    const key = `banners/${Date.now()}-${file.originalname}`;
+    await uploadToS3(file, key);
 
-    res.status(200).json({ message: "Banner updated", imageUrl });
+    const result = await Banner.update(new ObjectId(id), {
+      image: key,
+      updatedAt: new Date(),
+    });
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Banner not found" });
+    }
+
+    const signedUrl = await getSignedImageUrl(key);
+
+    return res.status(200).json({
+      message: "Banner updated",
+      image: key,
+      imageUrl: signedUrl,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error updating banner", error: error.message });
-  }
-};
-
-export const deleteBanner = async (req, res) => {
-  try {
-    const result = await Banner.delete();
-    res.status(200).json({ message: "Banner deleted" });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error deleting banner", error: error.message });
+    console.error("❌ updateBanner error:", error.message);
+    return res.status(500).json({ message: "Failed to update banner" });
   }
 };
