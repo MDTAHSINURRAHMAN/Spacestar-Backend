@@ -1,14 +1,11 @@
 import { uploadToS3, getSignedImageUrl } from "../services/s3Service.js";
 import { Banner } from "../models/Banner.js";
 
-
 export const getBanner = async (req, res) => {
   try {
     const banner = await Banner.findOne();
-    if (!banner) {
-      return res.status(404).json({ message: "No banner found" });
-    }
-    
+    if (!banner) return res.status(200).json({ imageUrl: null });
+
     const imageUrl = generateSignedUrl(banner.image);
     res.json({ imageUrl });
 
