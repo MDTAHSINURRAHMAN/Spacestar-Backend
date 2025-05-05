@@ -1,6 +1,6 @@
 import { uploadToS3, getSignedImageUrl } from "../services/s3Service.js";
 import { Banner } from "../models/Banner.js";
-import { getSignedUrl } from "../services/s3Service.js";
+
 
 export const getBanner = async (req, res) => {
   try {
@@ -10,7 +10,7 @@ export const getBanner = async (req, res) => {
       return res.status(404).json({ message: "No banner found" });
     }
 
-    const signedUrl = await getSignedUrl(banner.image); // This should match your S3 logic
+    const signedUrl = await getSignedImageUrl(banner.image); // This should match your S3 logic
     return res.status(200).json({
       _id: banner._id,
       image: banner.image,
