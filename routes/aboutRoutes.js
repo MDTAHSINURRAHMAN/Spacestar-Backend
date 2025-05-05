@@ -5,7 +5,7 @@ import { protect } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 // GET: Fetch about page content
-router.get("/", getAbout);
+router.get("/", protect, getAbout);
 
 // POST: Create a new about page content
 router.post("/", protect, createAbout);

@@ -6,7 +6,7 @@ import { protect } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 // GET: Get all banners
-router.get("/", getBanner);
+router.get("/", protect, getBanner);
 
 
 // PUT: Update a banner by ID
