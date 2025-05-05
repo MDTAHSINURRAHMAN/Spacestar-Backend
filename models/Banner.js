@@ -1,60 +1,39 @@
 import { getDB } from "../config/db.js";
-import { uploadToS3, getSignedImageUrl } from "../services/s3Service.js";
+import { ObjectId } from "mongodb";
 
 const collection = "banner";
 
 export const Banner = {
-  async get() {
+  async find() {
     const db = getDB();
-    const banner = await db.collection(collection).findOne({});
-    if (!banner) {
-      // Create default banner if none exists
-      const defaultBanner = {
-        imageKey: "",
-        text: "Pre-orders enjoy 10% off Full price item",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      await db.collection(collection).insertOne(defaultBanner);
-      return defaultBanner;
-    }
-
-    // Get signed URL for the image
-    if (banner.imageKey) {
-      banner.imageUrl = await getSignedImageUrl(banner.imageKey);
-    }
-
-    return banner;
+    return await db.collection(collection).find().toArray();
   },
 
-  async update(imageFile, text) {
+  async create(data) {
     const db = getDB();
-    let imageKey;
-    if (imageFile) {
-      const fileName = `banner/${Date.now()}-${imageFile.originalname}`;
-      // Upload to S3
-      imageKey = await uploadToS3(imageFile, fileName);
-    }
-    // Update database
-    const updateFields = {
+    const result = await db.collection(collection).insertOne({
+      ...data,
+      createdAt: new Date(),
       updatedAt: new Date(),
-    };
-    if (imageKey) updateFields.imageKey = imageKey;
-    if (typeof text === "string") updateFields.text = text;
+    });
+    return result;
+  },
+
+  async update(id, updateData) {
+    const db = getDB();
     return await db.collection(collection).updateOne(
-      {},
+      { _id: new ObjectId(id) },
       {
-        $set: updateFields,
-      },
-      { upsert: true }
+        $set: {
+          ...updateData,
+          updatedAt: new Date(),
+        },
+      }
     );
   },
-};
 
-export const BannerText = {
-  async update(text) {
+  async delete(id) {
     const db = getDB();
-    return await db.collection(collection).updateOne({}, { $set: { text } });
+    return await db.collection(collection).deleteOne({ _id: new ObjectId(id) });
   },
 };
-

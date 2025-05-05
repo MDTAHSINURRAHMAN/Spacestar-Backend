@@ -1,92 +1,95 @@
 import { Banner } from "../models/Banner.js";
+import { ObjectId } from "mongodb";
+import { uploadToS3 } from "../services/s3Service.js";
 
-// Get banner
+// GET: Retrieve all banners
 export const getBanner = async (req, res) => {
   try {
-    const banners = await Banner.findAll();
-    res.json(banners);
+    const banners = await Banner.find();
+    res.status(200).json(banners);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Failed to fetch banners", error: error.message });
   }
 };
 
-// Create a new banner
+// POST: Create a new banner with image upload to S3
 export const createBanner = async (req, res) => {
   try {
-    const imageUrl = req.file ? req.file.path : null;
-    
-    const banner = await Banner.create({
-      title: req.body.title,
-      description: req.body.description,
-      imageUrl: imageUrl,
-      isActive: req.body.isActive === "true"
+    if (!req.file) {
+      return res.status(400).json({ message: "Image file is required" });
+    }
+
+    const timestamp = Date.now();
+    const key = `banners/${timestamp}-${req.file.originalname}`;
+
+    await uploadToS3(req.file, key);
+
+    const result = await Banner.create({ image: key });
+
+    res.status(201).json({
+      message: "Banner created successfully",
+      bannerId: result.insertedId,
     });
-    
-    res.status(201).json(banner);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: "Failed to create banner", error: error.message });
   }
 };
 
-// Update banner
+// PUT: Update banner image by ID
 export const updateBanner = async (req, res) => {
   try {
-    const bannerId = req.params.id;
-    const banner = await Banner.findById(bannerId);
-    
-    if (!banner) {
+    const { id } = req.body;
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid banner ID" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Image file is required" });
+    }
+
+    const timestamp = Date.now();
+    const key = `banners/${timestamp}-${req.file.originalname}`;
+
+    await uploadToS3(req.file, key);
+
+    const result = await Banner.update(id, { image: key });
+
+    if (result.matchedCount === 0) {
       return res.status(404).json({ message: "Banner not found" });
     }
-    
-    // Update image if a new one is uploaded
-    if (req.file) {
-      banner.imageUrl = req.file.path;
-    }
-    
-    // Update other fields
-    banner.title = req.body.title || banner.title;
-    banner.description = req.body.description || banner.description;
-    banner.isActive = req.body.isActive === "true";
-    
-    const updatedBanner = await banner.save();
-    res.json(updatedBanner);
+
+    res.status(200).json({ message: "Banner updated successfully" });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: "Failed to update banner", error: error.message });
   }
 };
 
-// Update banner text only
-export const updateBannerText = async (req, res) => {
-  try {
-    const bannerId = req.params.id;
-    const banner = await Banner.findById(bannerId);
-    
-    if (!banner) {
-      return res.status(404).json({ message: "Banner not found" });
-    }
-    
-    banner.title = req.body.title || banner.title;
-    banner.description = req.body.description || banner.description;
-    
-    const updatedBanner = await banner.save();
-    res.json(updatedBanner);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-// Delete banner
+// DELETE: Delete banner by ID
 export const deleteBanner = async (req, res) => {
   try {
-    const bannerId = req.params.id;
-    const result = await Banner.delete(bannerId);
-    
-    if (result.deletedCount > 0) {
-      res.json({ message: "Banner deleted successfully" });
-    } else {
-      res.status(404).json({ message: "Banner not found" });
+    const { id } = req.body;
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid banner ID" });
     }
+
+    const result = await Banner.delete(id);
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "Banner not found" });
+    }
+
+    res.status(200).json({ message: "Banner deleted successfully" });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: "Failed to delete banner", error: error.message });
   }
 };
+
+export default {
+  getBanner,
+  createBanner,
+  updateBanner,
+  deleteBanner,
+};
+

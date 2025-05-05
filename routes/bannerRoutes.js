@@ -1,5 +1,5 @@
 import express from "express";
-import { getBanner, createBanner, updateBanner, updateBannerText, deleteBanner } from "../controllers/bannerController.js";
+import { getBanner, createBanner, updateBanner, deleteBanner } from "../controllers/bannerController.js";
 import { upload } from "../middlewares/uploadMiddleware.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
@@ -13,9 +13,9 @@ router.get("/", getBanner);
 router.post("/", protect, upload.single("image"), createBanner);
 
 // PUT: Update a banner by ID
-router.put("/:id", protect, upload.single("image"), updateBanner);
+router.put("/", protect, upload.single("image"), updateBanner);
 
 // DELETE: Delete a banner by ID
-router.delete("/:id", protect, deleteBanner);
+router.delete("/", protect, deleteBanner);
 
 export default router;
