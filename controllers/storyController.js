@@ -1,15 +1,14 @@
 import { Story } from "../models/Story.js";
 import { ObjectId } from "mongodb";
+import { uploadToS3 } from "../services/s3Service.js";
 
-// GET /api/stories
+// GET /api/story
 export const getStory = async (req, res) => {
   try {
     const stories = await Story.findAll();
-
     if (!stories || stories.length === 0) {
-      return res.status(200).json(null); // Return null if no stories
+      return res.status(200).json(null);
     }
-
     res.status(200).json(stories);
   } catch (error) {
     res.status(500).json({
@@ -19,21 +18,25 @@ export const getStory = async (req, res) => {
   }
 };
 
-// POST /api/stories
+// POST /api/story
 export const createStory = async (req, res) => {
   try {
-    const image = req.file?.location;
-
-    if (!image) {
-      return res.status(400).json({ message: "Image upload failed" });
+    if (!req.file) {
+      return res.status(400).json({ message: "Image is required" });
     }
 
     const content = JSON.parse(req.body.content || "[]");
 
-    // Basic content structure check
     if (!Array.isArray(content) || content.length === 0) {
       return res.status(400).json({ message: "Content must be a non-empty array" });
     }
+
+    // Upload to S3
+    const timestamp = Date.now();
+    const key = `stories/${timestamp}-${req.file.originalname}`;
+    await uploadToS3(req.file, key);
+
+    const image = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
 
     const newStory = {
       image,
@@ -55,7 +58,7 @@ export const createStory = async (req, res) => {
   }
 };
 
-// PUT /api/stories/:id
+// PUT /api/story/:id
 export const updateStory = async (req, res) => {
   try {
     const storyId = req.params.id;
@@ -64,18 +67,21 @@ export const updateStory = async (req, res) => {
       return res.status(400).json({ message: "Invalid story ID format" });
     }
 
-    const image = req.file?.location;
     const content = JSON.parse(req.body.content || "[]");
 
     if (!Array.isArray(content) || content.length === 0) {
       return res.status(400).json({ message: "Content must be a non-empty array" });
     }
 
-    const updateData = {
-      content,
-    };
+    const updateData = { content };
 
-    if (image) updateData.image = image;
+    if (req.file) {
+      const timestamp = Date.now();
+      const key = `stories/${timestamp}-${req.file.originalname}`;
+      await uploadToS3(req.file, key);
+
+      updateData.image = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+    }
 
     const result = await Story.update(storyId, updateData);
 
@@ -97,7 +103,7 @@ export const updateStory = async (req, res) => {
   }
 };
 
-// DELETE /api/stories/:id
+// DELETE /api/story/:id
 export const deleteStory = async (req, res) => {
   try {
     const storyId = req.params.id;
@@ -121,4 +127,9 @@ export const deleteStory = async (req, res) => {
   }
 };
 
-export default { getStory, createStory, updateStory, deleteStory };
+export default {
+  getStory,
+  createStory,
+  updateStory,
+  deleteStory,
+};
