@@ -1,21 +1,24 @@
-import { uploadToS3, getSignedImageUrl } from "../services/s3Service.js";
+import { getSignedImageUrl } from "../services/s3Service.js";
 import { Banner } from "../models/Banner.js";
 
 export const getBanner = async (req, res) => {
   try {
-    const banner = await Banner.find();
-    if (!banner) return res.status(200).json({ imageUrl: null });
+    const banners = await Banner.find();
 
-    const imageUrl = generateSignedUrl(banner.image);
-    res.json({ imageUrl });
+    if (!banners || banners.length === 0) {
+      return res.status(200).json({ imageUrl: null });
+    }
+
+    const banner = banners[0]; // Get the first banner
+    const imageUrl = await getSignedImageUrl(banner.image); // ✅ fixed name + async
 
     return res.status(200).json({
       _id: banner._id,
       image: banner.image,
-      imageUrl: imageUrl,
+      imageUrl,
     });
   } catch (error) {
-    console.error("Error in getBanner:", error);
+    console.error("❌ Error in getBanner:", error.message);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
