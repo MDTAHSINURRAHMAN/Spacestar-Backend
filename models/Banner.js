@@ -19,16 +19,17 @@ export const Banner = {
     return result;
   },
 
-  async update(id, updateData) {
+  async update(imageUrl) {
     const db = getDB();
-    return await db.collection(collection).updateOne(
-      { _id: new ObjectId(id) },
+    return await db.collection("banner").updateOne(
+      {},
       {
         $set: {
-          ...updateData,
+          image: imageUrl,
           updatedAt: new Date(),
         },
-      }
+      },
+      { upsert: true }
     );
   },
 
