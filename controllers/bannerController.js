@@ -8,7 +8,9 @@ export const getBanner = async (req, res) => {
     const banners = await Banner.find();
     res.status(200).json(banners);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch banners", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to fetch banners", error: error.message });
   }
 };
 
@@ -31,7 +33,9 @@ export const createBanner = async (req, res) => {
       bannerId: result.insertedId,
     });
   } catch (error) {
-    res.status(500).json({ message: "Failed to create banner", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to create banner", error: error.message });
   }
 };
 
@@ -53,15 +57,16 @@ export const updateBanner = async (req, res) => {
 
     await uploadToS3(req.file, key);
 
-    const result = await Banner.update(id, { image: key });
+    const imageUrl = await getSignedImageUrl(key);
+    await Banner.update(imageUrl);
 
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "Banner not found" });
-    }
+    res.status(200).json({ imageUrl });
 
     res.status(200).json({ message: "Banner updated successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to update banner", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to update banner", error: error.message });
   }
 };
 
@@ -82,7 +87,9 @@ export const deleteBanner = async (req, res) => {
 
     res.status(200).json({ message: "Banner deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete banner", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to delete banner", error: error.message });
   }
 };
 
@@ -92,4 +99,3 @@ export default {
   updateBanner,
   deleteBanner,
 };
-
