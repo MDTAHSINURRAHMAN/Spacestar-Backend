@@ -29,6 +29,7 @@ app.use(cookieParser());
 
 const allowedOrigins = [
   "http://localhost:3000",
+  "http://192.168.0.106:3000",
   "https://space-star-rho.vercel.app",
 ];
 
