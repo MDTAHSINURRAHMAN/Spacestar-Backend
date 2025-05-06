@@ -13,7 +13,7 @@ const router = express.Router();
 router.post("/", protect, createText);
 
 // GET: Get all text entries
-router.get("/", protect, getAllTexts);
+router.get("/", getAllTexts);
 
 // PUT: Update a text entry by ID
 router.put("/:id", protect, updateText);
