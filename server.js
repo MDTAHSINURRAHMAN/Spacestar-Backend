@@ -28,12 +28,21 @@ app.use(cookieParser());
 //   next();
 // });
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://space-star-rho.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "https://space-star-rho.vercel.app",
-    //  // ✅ your frontend URL (change in production)
-
-    credentials: true,               // ✅ must be true to allow cookie sending
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
   })
 );
 
@@ -48,7 +57,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/home", homeRoutes);
 app.use("/api/about", aboutRoutes);
 app.use("/api/story", storyRoutes);
-app.use("/api/public", publicRoutes);
+app.use("/api/user", publicRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
