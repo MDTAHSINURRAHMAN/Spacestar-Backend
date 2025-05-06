@@ -1,5 +1,10 @@
 import express from "express";
-import { getAbout, createAbout, updateAbout, deleteAbout } from "../controllers/aboutController.js";
+import {
+  getAbout,
+  createAbout,
+  updateAbout,
+  deleteAbout,
+} from "../controllers/aboutController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
