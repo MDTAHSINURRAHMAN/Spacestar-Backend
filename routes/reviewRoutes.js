@@ -13,7 +13,7 @@ import { upload } from "../middlewares/uploadMiddleware.js";
 const router = express.Router();
 
 router.post("/", protect, upload.single("image"), createReview);
-router.get("/product/:productId", protect, getReviewsByProductId);
+router.get("/product/:productId", getReviewsByProductId);
 router.get("/:id", getReviewById);
 router.get("/", getAllReviews);
 router.delete("/:id", protect, deleteReview);
