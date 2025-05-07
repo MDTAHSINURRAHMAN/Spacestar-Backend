@@ -68,4 +68,20 @@ export const Order = {
       .collection(collection)
       .updateOne({ _id: id }, { $set: allowedUpdates });
   },
+
+  async search(query) {
+    const db = getDB();
+    const searchRegex = new RegExp(query, "i");
+    return await db
+      .collection(collection)
+      .find({
+        $or: [
+          { "customer.name": searchRegex },
+          { "customer.email": searchRegex },
+          { "customer.phone": searchRegex },
+          { "customer.address": searchRegex },
+        ],
+      })
+      .toArray();
+  },
 };

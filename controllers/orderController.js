@@ -17,7 +17,13 @@ export const createOrder = async (req, res) => {
 
 export const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.findAll();
+    const { q } = req.query;
+    let orders;
+    if (q) {
+      orders = await Order.search(q);
+    } else {
+      orders = await Order.findAll();
+    }
     res.status(200).json(orders);
   } catch (error) {
     res
@@ -93,6 +99,8 @@ export const updateOrder = async (req, res) => {
 
     res.status(200).json({ message: "Order updated successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error updating order", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error updating order", error: error.message });
   }
 };
