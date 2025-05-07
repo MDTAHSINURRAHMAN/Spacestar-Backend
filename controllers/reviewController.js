@@ -105,12 +105,23 @@ export const getReviewById = async (req, res) => {
 
 export const getAllReviews = async (req, res) => {
   try {
-    const reviews = await Review.findAll();
+    const { q, product, customer, rating } = req.query;
+    
+    // Determine if we need to use search or findAll
+    let reviews;
+    if (q || product || customer || rating) {
+      // Use search functionality if any search parameters are provided
+      reviews = await Review.search({ q, product, customer, rating });
+    } else {
+      // Otherwise get all reviews
+      reviews = await Review.findAll();
+    }
+    
     const db = getDB();
 
+    // Enhance reviews with additional data
     const reviewsWithUrls = await Promise.all(
       reviews.map(async (review) => {
-
         // Add signed image URL
         if (review.image) {
           const imageUrl = await getSignedImageUrl(review.image);
@@ -130,7 +141,7 @@ export const getAllReviews = async (req, res) => {
           }
         }
 
-        return review; // 👈 Return the updated copy
+        return review;
       })
     );
 

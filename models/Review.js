@@ -55,4 +55,53 @@ export const Review = {
       }
     );
   },
+  async search(queryParams) {
+    const db = getDB();
+    const { product, customer, rating, q } = queryParams;
+    
+    // Build the query filter
+    const filter = {};
+    
+    // General search query (q parameter)
+    if (q) {
+      filter.$or = [
+        { name: { $regex: q, $options: 'i' } },      // Search by customer name
+        { subtext: { $regex: q, $options: 'i' } },   // Search by subtext
+        { review: { $regex: q, $options: 'i' } }     // Search by review content
+      ];
+    }
+    
+    // Specific filters
+    if (customer) {
+      filter.name = { $regex: customer, $options: 'i' };
+    }
+    
+    if (rating) {
+      filter.rating = rating; // Exact match for rating
+    }
+    
+    // If product filter is provided, handle it
+    if (product) {
+      // First try to find the product by name to get its ID
+      const productDoc = await db.collection('products').findOne(
+        { name: { $regex: product, $options: 'i' } },
+        { projection: { _id: 1 } }
+      );
+      
+      if (productDoc) {
+        // If product found by name, search by its ID
+        filter.productId = productDoc._id;
+      } else if (ObjectId.isValid(product)) {
+        // If the product parameter is a valid ObjectId, search directly by ID
+        filter.productId = new ObjectId(product);
+      } else {
+        // If it's not a valid ObjectId and no product was found by name,
+        // return empty array since no results will match
+        return [];
+      }
+    }
+    
+    // Execute the search
+    return await db.collection(collection).find(filter).toArray();
+  },
 };
