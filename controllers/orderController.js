@@ -17,22 +17,7 @@ export const createOrder = async (req, res) => {
 
 export const getAllOrders = async (req, res) => {
   try {
-    const db = getDB();
-    const search = (req.query.search || "").toLowerCase();
-
-    const query = search
-      ? {
-          $or: [
-            { "customer.name": { $regex: search, $options: "i" } },
-            { "customer.email": { $regex: search, $options: "i" } },
-            { "customer.phone": { $regex: search, $options: "i" } },
-            { "customer.address": { $regex: search, $options: "i" } },
-            { status: { $regex: search, $options: "i" } },
-          ],
-        }
-      : {};
-
-    const orders = await db.collection("orders").find(query).toArray();
+    const orders = await Order.findAll();
     res.status(200).json(orders);
   } catch (error) {
     res
@@ -108,8 +93,6 @@ export const updateOrder = async (req, res) => {
 
     res.status(200).json({ message: "Order updated successfully" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error updating order", error: error.message });
+    res.status(500).json({ message: "Error updating order", error: error.message });
   }
 };
