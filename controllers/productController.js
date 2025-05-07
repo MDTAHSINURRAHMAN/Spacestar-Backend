@@ -71,10 +71,14 @@ export const createProduct = async (req, res) => {
     const productData = req.body;
     const files = req.files;
 
-    // Handle image uploads
-    if (files && files.length > 0) {
+    productData.images = [];
+    productData.chartImage = null;
+
+    // ✅ Handle image array
+    const imageFiles = files?.images || [];
+    if (imageFiles.length > 0) {
       const imageKeys = await Promise.all(
-        files.map(async (file) => {
+        imageFiles.map(async (file) => {
           const key = `products/${Date.now()}-${file.originalname}`;
           return await uploadToS3(file, key);
         })
@@ -82,7 +86,14 @@ export const createProduct = async (req, res) => {
       productData.images = imageKeys;
     }
 
-    // ✅ No unnecessary JSON.parse
+    // ✅ Handle single chartImage
+    const chartFile = files?.chartImage?.[0];
+    if (chartFile) {
+      const key = `products/chartImages/${Date.now()}-${chartFile.originalname}`;
+      productData.chartImage = await uploadToS3(chartFile, key);
+    }
+
+    // ✅ Normalize sizes/colors
     if (!Array.isArray(productData.sizes)) {
       productData.sizes = [productData.sizes];
     }
@@ -93,36 +104,46 @@ export const createProduct = async (req, res) => {
     const result = await Product.create(productData);
     res.status(201).json(result);
   } catch (error) {
-    console.error(error); // Add this for future debugging
-    res
-      .status(400)
-      .json({ message: "Error creating product", error: error.message });
+    console.error(error);
+    res.status(400).json({
+      message: "Error creating product",
+      error: error.message,
+    });
   }
 };
+
 
 export const updateProduct = async (req, res) => {
   try {
     const productId = new ObjectId(req.params.id);
     const productData = req.body;
-    const files = req.files; // Uploaded files
+    const files = req.files;
 
-    // Existing images from frontend
+    // Parse existing images from the frontend
     const existingImages = JSON.parse(productData.existingImages || "[]");
-
     let finalImages = existingImages;
 
-    // Handle new image uploads
-    if (files && files.length > 0) {
+    // ✅ Handle uploaded product images
+    const newImageFiles = files?.images || [];
+    if (newImageFiles.length > 0) {
       const uploadedKeys = await Promise.all(
-        files.map(async (file) => {
+        newImageFiles.map(async (file) => {
           const key = `products/${Date.now()}-${file.originalname}`;
-          return await uploadToS3(file, key); // Assume this returns the S3 key
+          return await uploadToS3(file, key);
         })
       );
       finalImages = [...existingImages, ...uploadedKeys];
     }
 
-    // Prepare final update data
+    // ✅ Handle uploaded chartImage (overwrite old one if present)
+    let chartImageKey = productData.existingChartImage || null;
+    const chartImageFile = files?.chartImage?.[0];
+    if (chartImageFile) {
+      const key = `products/chartImages/${Date.now()}-${chartImageFile.originalname}`;
+      chartImageKey = await uploadToS3(chartImageFile, key);
+    }
+
+    // ✅ Construct update payload
     const updateData = {
       name: productData.name,
       description: productData.description,
@@ -132,7 +153,8 @@ export const updateProduct = async (req, res) => {
       isPreOrder: productData.isPreOrder === "true",
       sizes: JSON.parse(productData.sizes),
       colors: JSON.parse(productData.colors),
-      images: finalImages, // ✅ New + old images combined
+      images: finalImages,
+      chartImage: chartImageKey,
       updatedAt: new Date(),
     };
 
@@ -145,11 +167,10 @@ export const updateProduct = async (req, res) => {
     res.status(200).json({ message: "Product updated successfully" });
   } catch (error) {
     console.error(error);
-    res
-      .status(400)
-      .json({ message: "Error updating product", error: error.message });
+    res.status(400).json({ message: "Error updating product", error: error.message });
   }
 };
+
 
 export const deleteProduct = async (req, res) => {
   try {

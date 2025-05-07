@@ -13,8 +13,24 @@ const router = express.Router();
 
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
-router.post("/", protect, upload.array("images", 5), createProduct);
-router.put("/:id", protect, upload.array("images", 5), updateProduct);
+router.post(
+  "/",
+  protect,
+  upload.fields([
+    { name: "images", maxCount: 5 },
+    { name: "chartImage", maxCount: 1 },
+  ]),
+  createProduct
+);
+router.put(
+  "/:id",
+  protect,
+  upload.fields([
+    { name: "images", maxCount: 5 },
+    { name: "chartImage", maxCount: 1 },
+  ]),
+  updateProduct
+);
 router.delete("/:id", protect, deleteProduct);
 router.post(
   "/:id/chart-image",

@@ -8,6 +8,7 @@ export const Product = {
     const result = await db.collection(collection).insertOne({
       ...productData,
       images: productData.images || [],
+      chartImage: productData.chartImage || null, // ✅ Add this line
       sizes: productData.sizes || [],
       colors: productData.colors || [],
       createdAt: new Date(),
