@@ -15,12 +15,15 @@ export const createOrder = async (req, res) => {
   }
 };
 
+// Fixed getAllOrders function
 export const getAllOrders = async (req, res) => {
   try {
-    const { q } = req.query;
+    const { search, q } = req.query;
+    let searchTerm = search || q; // Accept either 'search' or 'q' parameter
     let orders;
-    if (q) {
-      orders = await Order.search(q);
+    
+    if (searchTerm) {
+      orders = await Order.search(searchTerm);
     } else {
       orders = await Order.findAll();
     }
