@@ -17,31 +17,28 @@ export const createOrder = async (req, res) => {
 
 export const getAllOrders = async (req, res) => {
   try {
-    const search = req.query.search?.toLowerCase() || "";
     const db = getDB();
+    const search = (req.query.search || "").toLowerCase();
 
-    const filter =
-      search && search.trim() !== ""
-        ? {
-            $or: [
-              { "customer.name": { $regex: search, $options: "i" } },
-              { "customer.email": { $regex: search, $options: "i" } },
-              { "customer.phone": { $regex: search, $options: "i" } },
-              { "customer.address": { $regex: search, $options: "i" } },
-              { status: { $regex: search, $options: "i" } },
-            ],
-          }
-        : {};
+    const query = search
+      ? {
+          $or: [
+            { "customer.name": { $regex: search, $options: "i" } },
+            { "customer.email": { $regex: search, $options: "i" } },
+            { "customer.phone": { $regex: search, $options: "i" } },
+            { "customer.address": { $regex: search, $options: "i" } },
+            { status: { $regex: search, $options: "i" } },
+          ],
+        }
+      : {};
 
-    const orders = await db.collection("orders").find(filter).toArray();
-
+    const orders = await db.collection("orders").find(query).toArray();
     res.status(200).json(orders);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error fetching orders", error: error.message });
+    res.status(500).json({ message: "Error fetching orders", error: error.message });
   }
 };
+
 
 export const getOrderById = async (req, res) => {
   try {
