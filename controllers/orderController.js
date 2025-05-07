@@ -35,10 +35,11 @@ export const getAllOrders = async (req, res) => {
     const orders = await db.collection("orders").find(query).toArray();
     res.status(200).json(orders);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching orders", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching orders", error: error.message });
   }
 };
-
 
 export const getOrderById = async (req, res) => {
   try {
