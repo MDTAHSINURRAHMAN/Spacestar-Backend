@@ -8,7 +8,11 @@ export const getAllProducts = async (req, res) => {
 
     const filters = {};
     if (search) filters.search = search;
-    if (category) filters.category = category;
+    if (category) {
+      // Split comma-separated categories and trim whitespace
+      const categories = category.split(',').map(cat => cat.trim());
+      filters.category = { $in: categories }; // Use $in operator for multiple categories
+    }
 
     const products = await Product.findAll(filters);
 
