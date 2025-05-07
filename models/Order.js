@@ -76,10 +76,13 @@ export const Order = {
       .collection(collection)
       .find({
         $or: [
-          { "customer.name": searchRegex },
+          { "customer.firstName": searchRegex },
+          { "customer.lastName": searchRegex },
           { "customer.email": searchRegex },
           { "customer.phone": searchRegex },
           { "customer.address": searchRegex },
+          { "customer.city": searchRegex },
+          { "customer.discountCode": searchRegex },
         ],
       })
       .toArray();
