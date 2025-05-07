@@ -20,17 +20,18 @@ export const getAllOrders = async (req, res) => {
     const search = req.query.search?.toLowerCase() || "";
     const db = getDB();
 
-    const filter = search
-      ? {
-          $or: [
-            { "customer.name": { $regex: search, $options: "i" } },
-            { "customer.email": { $regex: search, $options: "i" } },
-            { "customer.phone": { $regex: search, $options: "i" } },
-            { "customer.address": { $regex: search, $options: "i" } },
-            { status: { $regex: search, $options: "i" } },
-          ],
-        }
-      : {};
+    const filter =
+      search && search.trim() !== ""
+        ? {
+            $or: [
+              { "customer.name": { $regex: search, $options: "i" } },
+              { "customer.email": { $regex: search, $options: "i" } },
+              { "customer.phone": { $regex: search, $options: "i" } },
+              { "customer.address": { $regex: search, $options: "i" } },
+              { status: { $regex: search, $options: "i" } },
+            ],
+          }
+        : {};
 
     const orders = await db.collection("orders").find(filter).toArray();
 
@@ -41,8 +42,6 @@ export const getAllOrders = async (req, res) => {
       .json({ message: "Error fetching orders", error: error.message });
   }
 };
-
-
 
 export const getOrderById = async (req, res) => {
   try {
@@ -111,7 +110,8 @@ export const updateOrder = async (req, res) => {
 
     res.status(200).json({ message: "Order updated successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error updating order", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error updating order", error: error.message });
   }
 };
-
