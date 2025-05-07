@@ -10,7 +10,7 @@ export const getAllProducts = async (req, res) => {
     if (search) filters.search = search;
     if (category) {
       // Split comma-separated categories and trim whitespace
-      const categories = category.split(',').map(cat => cat.trim());
+      const categories = category.split(",").map((cat) => cat.trim());
       filters.category = { $in: categories }; // Use $in operator for multiple categories
     }
 
@@ -37,7 +37,6 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
-
 export const getProductById = async (req, res) => {
   try {
     const productId = new ObjectId(req.params.id);
@@ -53,6 +52,10 @@ export const getProductById = async (req, res) => {
         product.images.map((key) => getSignedImageUrl(key))
       );
       product.images = signedUrls;
+    }
+    // Get signed URL for chartImage
+    if (product.chartImage) {
+      product.chartImage = await getSignedImageUrl(product.chartImage);
     }
 
     res.status(200).json(product);
@@ -113,7 +116,7 @@ export const updateProduct = async (req, res) => {
       const uploadedKeys = await Promise.all(
         files.map(async (file) => {
           const key = `products/${Date.now()}-${file.originalname}`;
-          return await uploadToS3(file, key);  // Assume this returns the S3 key
+          return await uploadToS3(file, key); // Assume this returns the S3 key
         })
       );
       finalImages = [...existingImages, ...uploadedKeys];
@@ -129,7 +132,7 @@ export const updateProduct = async (req, res) => {
       isPreOrder: productData.isPreOrder === "true",
       sizes: JSON.parse(productData.sizes),
       colors: JSON.parse(productData.colors),
-      images: finalImages,  // ✅ New + old images combined
+      images: finalImages, // ✅ New + old images combined
       updatedAt: new Date(),
     };
 
@@ -148,7 +151,6 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-
 export const deleteProduct = async (req, res) => {
   try {
     const productId = new ObjectId(req.params.id);
@@ -161,5 +163,38 @@ export const deleteProduct = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error deleting product", error: error.message });
+  }
+};
+
+export const uploadChartImage = async (req, res) => {
+  try {
+    const productId = new ObjectId(req.params.id);
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ message: "No chart image file provided" });
+    }
+
+    const key = `products/chartImages/${Date.now()}-${file.originalname}`;
+    const chartImageKey = await uploadToS3(file, key);
+
+    // Update the product with the new chartImage key
+    const result = await Product.update(productId, {
+      chartImage: chartImageKey,
+      updatedAt: new Date(),
+    });
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json({
+      message: "Chart image uploaded successfully",
+      chartImage: chartImageKey,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error uploading chart image", error: error.message });
   }
 };
