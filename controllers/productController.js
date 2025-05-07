@@ -4,9 +4,15 @@ import { uploadToS3, getSignedImageUrl } from "../services/s3Service.js";
 
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.findAll();
+    const { search, category } = req.query;
 
-    // Get signed URLs for all images
+    const filters = {};
+    if (search) filters.search = search;
+    if (category) filters.category = category;
+
+    const products = await Product.findAll(filters);
+
+    // Get signed URLs
     const productsWithSignedUrls = await Promise.all(
       products.map(async (product) => {
         if (product.images && product.images.length > 0) {
@@ -26,6 +32,7 @@ export const getAllProducts = async (req, res) => {
       .json({ message: "Error fetching products", error: error.message });
   }
 };
+
 
 export const getProductById = async (req, res) => {
   try {

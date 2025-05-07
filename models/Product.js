@@ -21,9 +21,20 @@ export const Product = {
     return await db.collection(collection).findOne({ _id: id });
   },
 
-  async findAll() {
+  async findAll(filters = {}) {
     const db = getDB();
-    return await db.collection(collection).find().toArray();
+  
+    const query = {};
+  
+    if (filters.search) {
+      query.name = { $regex: filters.search, $options: "i" }; // partial, case-insensitive match
+    }
+  
+    if (filters.category) {
+      query.category = filters.category; // exact match
+    }
+  
+    return await db.collection(collection).find(query).toArray();
   },
 
   async update(id, updateData) {
