@@ -89,7 +89,9 @@ export const createProduct = async (req, res) => {
     // ✅ Handle single chartImage
     const chartFile = files?.chartImage?.[0];
     if (chartFile) {
-      const key = `products/chartImages/${Date.now()}-${chartFile.originalname}`;
+      const key = `products/chartImages/${Date.now()}-${
+        chartFile.originalname
+      }`;
       productData.chartImage = await uploadToS3(chartFile, key);
     }
 
@@ -111,7 +113,6 @@ export const createProduct = async (req, res) => {
     });
   }
 };
-
 
 export const updateProduct = async (req, res) => {
   try {
@@ -139,7 +140,9 @@ export const updateProduct = async (req, res) => {
     let chartImageKey = productData.existingChartImage || null;
     const chartImageFile = files?.chartImage?.[0];
     if (chartImageFile) {
-      const key = `products/chartImages/${Date.now()}-${chartImageFile.originalname}`;
+      const key = `products/chartImages/${Date.now()}-${
+        chartImageFile.originalname
+      }`;
       chartImageKey = await uploadToS3(chartImageFile, key);
     }
 
@@ -167,10 +170,11 @@ export const updateProduct = async (req, res) => {
     res.status(200).json({ message: "Product updated successfully" });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: "Error updating product", error: error.message });
+    res
+      .status(400)
+      .json({ message: "Error updating product", error: error.message });
   }
 };
-
 
 export const deleteProduct = async (req, res) => {
   try {
@@ -217,5 +221,16 @@ export const uploadChartImage = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error uploading chart image", error: error.message });
+  }
+};
+
+export const getAllCategories = async (req, res) => {
+  try {
+    const categories = await Product.getAllCategories();
+    res.status(200).json(categories);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching categories", error: error.message });
   }
 };

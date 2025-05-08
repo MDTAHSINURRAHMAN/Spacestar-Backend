@@ -6,6 +6,7 @@ import {
   updateProduct,
   deleteProduct,
   uploadChartImage,
+  getAllCategories,
 } from "../controllers/productController.js";
 import { upload } from "../middlewares/uploadMiddleware.js";
 import { protect } from "../middlewares/authMiddleware.js";
@@ -38,5 +39,6 @@ router.post(
   upload.single("chartImage"),
   uploadChartImage
 );
+router.get("/categories", getAllCategories);
 
 export default router;

@@ -24,17 +24,17 @@ export const Product = {
 
   async findAll(filters = {}) {
     const db = getDB();
-  
+
     const query = {};
-  
+
     if (filters.search) {
       query.name = { $regex: filters.search, $options: "i" }; // partial, case-insensitive match
     }
-  
+
     if (filters.category) {
       query.category = filters.category; // exact match
     }
-  
+
     return await db.collection(collection).find(query).toArray();
   },
 
@@ -54,5 +54,10 @@ export const Product = {
   async delete(id) {
     const db = getDB();
     return await db.collection(collection).deleteOne({ _id: id });
+  },
+
+  async getAllCategories() {
+    const db = getDB();
+    return await db.collection(collection).distinct("category");
   },
 };
