@@ -203,33 +203,28 @@ export const uploadChartImage = async (req, res) => {
     const key = `products/chartImages/${Date.now()}-${file.originalname}`;
     const chartImageKey = await uploadToS3(file, key);
 
-    // Update the product with the new chartImage key
-    const updatedProduct = await Product.findByIdAndUpdate(
-      productId,
-      {
-        $set: {
-          chartImage: chartImageKey,
-          updatedAt: new Date(),
-        },
-      },
-      { new: true }
-    );
+    // ✅ Use your existing model method
+    const result = await Product.update(productId, {
+      chartImage: chartImageKey,
+      updatedAt: new Date(),
+    });
 
-    if (!updatedProduct) {
+    if (result.matchedCount === 0) {
       return res.status(404).json({ message: "Product not found" });
     }
 
     res.status(200).json({
       message: "Chart image uploaded successfully",
       chartImage: chartImageKey,
-      product: updatedProduct,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error uploading chart image", error: error.message });
+    res.status(500).json({
+      message: "Error uploading chart image",
+      error: error.message,
+    });
   }
 };
+
 
 export const getAllCategories = async (req, res) => {
   try {
