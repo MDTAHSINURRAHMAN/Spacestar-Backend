@@ -34,6 +34,7 @@ const allowedOrigins = [
   "http://192.168.0.106:3000",
   "http://192.168.0.106:3001",
   "https://space-star-rho.vercel.app",
+  "https://spacestar-frontend.vercel.app",
 ];
 
 app.use(
