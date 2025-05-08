@@ -13,6 +13,7 @@ import { protect } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 router.get("/", getAllProducts);
+router.get("/categories", getAllCategories);
 router.get("/:id", getProductById);
 router.post(
   "/",
@@ -39,6 +40,5 @@ router.post(
   upload.single("chartImage"),
   uploadChartImage
 );
-router.get("/categories", getAllCategories);
 
 export default router;

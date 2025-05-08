@@ -229,8 +229,9 @@ export const getAllCategories = async (req, res) => {
     const categories = await Product.getAllCategories();
     res.status(200).json(categories);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error fetching categories", error: error.message });
+    res.status(500).json({
+      message: "Error fetching categories",
+      error: error.message,
+    });
   }
 };
