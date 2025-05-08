@@ -2,6 +2,10 @@ import { Product } from "../models/Product.js";
 import { ObjectId } from "mongodb";
 import { uploadToS3, getSignedImageUrl } from "../services/s3Service.js";
 
+function normalizeS3Key(key) {
+  return typeof key === "string" ? key.replace(/^\//, "") : key;
+}
+
 export const getAllProducts = async (req, res) => {
   try {
     const { search, category } = req.query;
@@ -20,8 +24,9 @@ export const getAllProducts = async (req, res) => {
     const productsWithSignedUrls = await Promise.all(
       products.map(async (product) => {
         if (product.images && product.images.length > 0) {
+          const imageKeys = product.images.map(normalizeS3Key);
           const signedUrls = await Promise.all(
-            product.images.map((key) => getSignedImageUrl(key))
+            imageKeys.map((key) => getSignedImageUrl(key))
           );
           return { ...product, images: signedUrls };
         }
@@ -48,8 +53,9 @@ export const getProductById = async (req, res) => {
 
     // Get signed URLs for images
     if (product.images && product.images.length > 0) {
+      const imageKeys = product.images.map(normalizeS3Key);
       const signedUrls = await Promise.all(
-        product.images.map((key) => getSignedImageUrl(key))
+        imageKeys.map((key) => getSignedImageUrl(key))
       );
       product.images = signedUrls;
     }
@@ -121,7 +127,10 @@ export const updateProduct = async (req, res) => {
     const files = req.files;
 
     // Parse existing images from the frontend
-    const existingImages = JSON.parse(productData.existingImages || "[]");
+    // Parse and normalize existing images from the frontend
+    const existingImages = JSON.parse(productData.existingImages || "[]").map(
+      normalizeS3Key
+    );
     let finalImages = existingImages;
 
     // ✅ Handle uploaded product images
@@ -224,7 +233,6 @@ export const uploadChartImage = async (req, res) => {
     });
   }
 };
-
 
 export const getAllCategories = async (req, res) => {
   try {
