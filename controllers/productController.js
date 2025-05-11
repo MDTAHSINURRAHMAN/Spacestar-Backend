@@ -158,11 +158,17 @@ export const updateProduct = async (req, res) => {
     // ✅ Construct update payload
     const updateData = {
       name: productData.name,
-      description: productData.description,
+      shortDescription: productData.shortDescription,
+      longDescription: productData.longDescription,
+      designer: productData.designer,
       price: parseFloat(productData.price),
       category: productData.category,
       stock: parseInt(productData.stock),
       isPreOrder: productData.isPreOrder === "true",
+      material: productData.material,
+      isFeatured: productData.isFeatured === "true",
+      isOnSale: productData.isOnSale === "true",
+      featuredImage: JSON.parse(productData.featuredImage),
       sizes: JSON.parse(productData.sizes),
       colors: JSON.parse(productData.colors),
       images: finalImages,
