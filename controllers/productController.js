@@ -170,7 +170,6 @@ export const updateProduct = async (req, res) => {
       material: productData.material,
       isFeatured: productData.isFeatured === "true",
       isOnSale: productData.isOnSale === "true",
-      featuredImage: JSON.parse(productData.featuredImage),
       sizes: JSON.parse(productData.sizes),
       colors: JSON.parse(productData.colors),
       images: finalImages,
