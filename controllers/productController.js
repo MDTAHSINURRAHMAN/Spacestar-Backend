@@ -122,6 +122,8 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
+    console.log("🔍 Incoming req.body:", req.body);
+    console.log("📂 Incoming req.files:", req.files);
     const productId = new ObjectId(req.params.id);
     const productData = req.body;
     const files = req.files;
