@@ -15,6 +15,7 @@ import homeRoutes from "./routes/homeRoutes.js";
 import aboutRoutes from "./routes/aboutRoutes.js";
 import storyRoutes from "./routes/storyRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
+import privacyRoutes from "./routes/privacyRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -61,6 +62,7 @@ app.use("/api/home", homeRoutes);
 app.use("/api/about", aboutRoutes);
 app.use("/api/story", storyRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/privacy", privacyRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
