@@ -25,10 +25,16 @@ export const createStory = async (req, res) => {
       return res.status(400).json({ message: "Image is required" });
     }
 
-    const content = JSON.parse(req.body.content || "[]");
+    const content = JSON.parse(req.body.content || "{}");
 
-    if (!Array.isArray(content) || content.length === 0) {
-      return res.status(400).json({ message: "Content must be a non-empty array" });
+    if (
+      !content ||
+      typeof content !== "object" ||
+      Object.keys(content).length === 0
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Valid Tiptap content is required" });
     }
 
     // Upload to S3
@@ -67,10 +73,16 @@ export const updateStory = async (req, res) => {
       return res.status(400).json({ message: "Invalid story ID format" });
     }
 
-    const content = JSON.parse(req.body.content || "[]");
+    const content = JSON.parse(req.body.content || "{}");
 
-    if (!Array.isArray(content) || content.length === 0) {
-      return res.status(400).json({ message: "Content must be a non-empty array" });
+    if (
+      !content ||
+      typeof content !== "object" ||
+      Object.keys(content).length === 0
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Valid Tiptap content is required" });
     }
 
     const updateData = { content };

@@ -9,7 +9,7 @@ export const Story = {
     const result = await db.collection(collection).insertOne({
       ...storyData,
       image: storyData.image || "", // S3 image URL
-      content: storyData.content || [], // Array of title and description objects
+      content: storyData.content || {}, // Tiptap JSON content
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -18,7 +18,16 @@ export const Story = {
 
   async findAll() {
     const db = getDB();
-    return await db.collection(collection).find().sort({ createdAt: -1 }).toArray();
+    return await db
+      .collection(collection)
+      .find()
+      .sort({ createdAt: -1 })
+      .toArray();
+  },
+
+  async findById(id) {
+    const db = getDB();
+    return await db.collection(collection).findOne({ _id: new ObjectId(id) });
   },
 
   async update(id, updateData) {
