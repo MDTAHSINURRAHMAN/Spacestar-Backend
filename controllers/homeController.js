@@ -5,8 +5,13 @@ import { ObjectId } from "mongodb";
 // Create a new text entry
 export const createText = async (req, res) => {
   try {
+    const { text, instagram, facebook, whatsapp, twitter } = req.body;
     const result = await Text.create({
-      text: req.body.text,
+      text,
+      instagram,
+      facebook,
+      whatsapp,
+      twitter,
     });
     res.status(201).json(result);
   } catch (error) {
@@ -27,14 +32,16 @@ export const getAllTexts = async (req, res) => {
 // Update a text entry
 export const updateText = async (req, res) => {
   try {
-    const db = getDB();
-    const result = await db.collection("home").updateOne(
-      { _id: new ObjectId(req.params.id) },
-      { $set: { text: req.body.text, updatedAt: new Date() } }
-    );
-    
-    if (result.matchedCount > 0) {
-      const updatedText = await Text.findById(req.params.id);
+    const { text, facebook, twitter, instagram, linkedin } = req.body;
+    const updatedText = await Text.update(req.params.id, {
+      text,
+      instagram,
+      facebook,
+      whatsapp,
+      twitter,
+    });
+
+    if (updatedText) {
       res.json(updatedText);
     } else {
       res.status(404).json({ message: "Text not found" });
@@ -57,5 +64,3 @@ export const deleteText = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
