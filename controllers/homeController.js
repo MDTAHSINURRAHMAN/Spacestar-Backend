@@ -32,7 +32,7 @@ export const getAllTexts = async (req, res) => {
 // Update a text entry
 export const updateText = async (req, res) => {
   try {
-    const { text, facebook, twitter, instagram, linkedin } = req.body;
+    const { text, instagram, facebook, whatsapp, twitter } = req.body;
     const updatedText = await Text.update(req.params.id, {
       text,
       instagram,
