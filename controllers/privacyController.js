@@ -1,22 +1,23 @@
 import { Privacy } from "../models/Privacy.js";
 import { ObjectId } from "mongodb";
 import { uploadToS3 } from "../services/s3Service.js";
+import { getDB } from "../config/db.js";
 
 // GET /api/privacy
 export const getPrivacy = async (req, res) => {
-  try {
-    const privacies = await Privacy.findAll();
-    if (!privacies || privacies.length === 0) {
-      return res.status(200).json(null);
+    try {
+      const db = getDB(); // get the db instance
+  
+      const privacies = await db.collection("privacy").find().toArray();
+  
+      res.status(200).json(privacies); // ✅ always return array
+    } catch (error) {
+      res.status(500).json({
+        message: "Failed to fetch privacies",
+        error: error.message,
+      });
     }
-    res.status(200).json(privacies);
-  } catch (error) {
-    res.status(500).json({
-      message: "Failed to fetch privacies",
-      error: error.message,
-    });
-  }
-};
+  };
 
 // POST /api/privacy
 export const createPrivacy = async (req, res) => {
