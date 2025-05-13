@@ -11,6 +11,9 @@ export const About = {
     const db = getDB();
     const result = await db.collection("about").insertOne({
       ...data,
+      image1: data.image1 || null,
+      image2: data.image2 || null,
+      iframeLink: data.iframeLink || null,
       createdAt: new Date(),
     });
     return result.ops?.[0] || { _id: result.insertedId, ...data };
@@ -27,6 +30,9 @@ export const About = {
           email: data.email,
           address: data.address,
           phone: data.phone,
+          image1: data.image1,
+          image2: data.image2,
+          iframeLink: data.iframeLink,
           updatedAt: new Date(),
         },
       },
