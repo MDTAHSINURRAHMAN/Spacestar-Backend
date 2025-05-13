@@ -5,9 +5,11 @@ import { uploadToS3 } from "../services/s3Service.js";
 // GET /api/story
 export const getStory = async (req, res) => {
   try {
-    const stories = await Story.findAll();
-    // Always return an array
-    res.status(200).json(stories);
+    const db = getDB(); // get the db instance
+
+    const stories = await db.collection("story").find().toArray();
+
+    res.status(200).json(stories); // ✅ always return array
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch stories",
