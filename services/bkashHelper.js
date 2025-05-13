@@ -82,6 +82,39 @@ export const verifyPayment = async (paymentID) => {
 
     return response.data;
   } catch (error) {
+    // Handle specific bKash errors
+    if (error.response && error.response.data) {
+      throw new Error(
+        `bKash payment verification failed: ${JSON.stringify(
+          error.response.data
+        )}`
+      );
+    }
     throw new Error("Failed to verify bKash payment: " + error.message);
+  }
+};
+
+// Query payment status
+export const queryPayment = async (paymentID) => {
+  try {
+    const token = await getToken();
+    const response = await axios.post(
+      `${bkashConfig.baseUrl}/tokenized/checkout/payment/status`,
+      {
+        paymentID,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: token,
+          "X-APP-Key": bkashConfig.appKey,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to query bKash payment status: " + error.message);
   }
 };

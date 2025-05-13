@@ -6,9 +6,7 @@ import { uploadToS3 } from "../services/s3Service.js";
 export const getStory = async (req, res) => {
   try {
     const stories = await Story.findAll();
-    if (!stories || stories.length === 0) {
-      return res.status(200).json(null);
-    }
+    // Always return an array
     res.status(200).json(stories);
   } catch (error) {
     res.status(500).json({
@@ -17,6 +15,7 @@ export const getStory = async (req, res) => {
     });
   }
 };
+
 
 // POST /api/story
 export const createStory = async (req, res) => {
