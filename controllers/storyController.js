@@ -1,6 +1,7 @@
 import { Story } from "../models/Story.js";
 import { ObjectId } from "mongodb";
 import { uploadToS3 } from "../services/s3Service.js";
+import { getDB } from "../config/db.js";
 
 // GET /api/story
 export const getStory = async (req, res) => {
