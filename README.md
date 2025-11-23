@@ -99,18 +99,6 @@ npm start
 
 - There are no automated tests configured in `package.json` (the `test` script is a placeholder). To add tests, integrate a test runner such as `jest` or `mocha` and author tests under a `tests/` folder.
 
-**📸 Showcase / Screenshots**
-
-Add screenshots to a `screenshots/` folder. Suggested names based on UI/backend features:
-
-- `screenshots/products-list.png`
-- `screenshots/product-detail.png`
-- `screenshots/admin-dashboard.png`
-- `screenshots/checkout-flow.png`
-
-Example Markdown image placeholder:
-
-`![Products List](screenshots/products-list.png)`
 
 **Design Decisions & Architecture Notes**
 
@@ -125,22 +113,3 @@ Example Markdown image placeholder:
 **Contact & Attribution**
 
 - Built with care by MDTAHSINURRAHMAN. GitHub: `https://github.com/MDTAHSINURRAHMAN` (or add your preferred contact).
-
-**License**
-
-- License: `ISC` (as declared in `package.json`).
-
-**Next steps & Suggestions**
-
-- Add automated tests (unit + integration) and a CI pipeline.
-- Add rate limiting and input validation (where missing) for public endpoints.
-- Harden error handling and create a monitoring/logging integration (Sentry, LogDNA).
-- If `mongoose` is not used, consider removing it from dependencies to reduce bundle size.
-
----
-
-If you want, I can:
-
-- run a lightweight audit of missing environment variables,
-- scaffold a `README`-based `.env.example`, or
-- add a simple `POSTMAN` collection showing the main API flows.
